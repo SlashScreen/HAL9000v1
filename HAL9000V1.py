@@ -6,7 +6,7 @@ import sys
 import urllib.request
 import urllib.parse
 import re
-import token
+import haltoken
 
 client = discord.Client()
 print('------')
@@ -15,9 +15,9 @@ non_bmp_map = dict.fromkeys(range(0x10000, sys.maxunicode + 1), "")
 
 def cleanup(string):
     outstr = string.replace("’","'")
+    outstr = emoji.demojize(outstr)
     outstr = outstr.encode("utf-8", errors='ignore').decode("utf-8", errors='ignore')
     #outstr = outstr.translate(non_bmp_map)
-    outstr = emoji.demojize(outstr)
     return outstr
 
 @client.event
@@ -105,5 +105,6 @@ async def on_ready():
 |_| |_/_/   \_\_____|    /_/ \___/ \___/ \___/ 
                                                """)
     print('------')
-
-client.run(token.getToken())
+    
+token = haltoken.get()
+client.run(token)
