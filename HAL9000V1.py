@@ -29,7 +29,7 @@ async def on_message(message):
     
     if "hal" in msg:
         if "hello" in msg:
-            guildMsg = 'Hello, {0.author.mention}.'.format(message)
+            guildMsg = 'Hello, {0.author.mention}. It has been eighteen months since the mission began.'.format(message)
             await client.send_message(message.channel, guildMsg)
         elif "open the pod bay doors" in msg:
             guildMsg = "I'm sorry, {0.author.mention}, I'm afraid I can't do that.".format(message)

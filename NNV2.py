@@ -11,5 +11,5 @@ def generate(prefix):
     return phrase
 
 if __name__ == "__main__":
-    #train(50)
+    train(50)
     generate("I must interject by saying ")
