@@ -7,6 +7,7 @@ import urllib.request
 import urllib.parse
 import re
 import haltoken
+import giphysearch
 
 client = discord.Client()
 print('------')
@@ -82,6 +83,10 @@ async def on_message(message):
             html_content = urllib.request.urlopen("http://www.youtube.com/results?" + query_string)
             search_results = re.findall(r'href=\"\/watch\?v=(.{11})', html_content.read().decode())
             guildMsg = ("http://www.youtube.com/watch?v=" + search_results[0])
+            await client.send_message(message.channel, guildMsg)
+        elif "gif" in msg:
+            qry = msg[msg.find("gif")+3:]
+            guildMsg = giphysearch.search(qry)
             await client.send_message(message.channel, guildMsg)
             
     else:
