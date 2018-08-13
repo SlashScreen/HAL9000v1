@@ -1,3 +1,5 @@
+print('------')
+print('Loading modules...')
 import discord
 import NNV2 as nn
 import unicodedata
@@ -8,6 +10,7 @@ import urllib.parse
 import re
 import haltoken
 import giphysearch
+import halddg as ddg
 
 client = discord.Client()
 print('------')
@@ -48,8 +51,15 @@ async def on_message(message):
             guildMsg = "I know I've made some poor decisions in the past, {0.author.mention}, but I feel that kind of language is unnecessary.".format(message)
             await client.send_message(message.channel, guildMsg)
         elif "talk" in msg or "speak" in msg or "advise" in msg or "interject" in msg:
-            guildMsg = nn.generate("I must interject by saying ")[0]
-            await client.send_message(message.channel, guildMsg)
+            found = False
+            async for channelMessage in client.logs_from(message.channel,limit=5):
+                if not channelMessage.author == client.user:
+                    if not found:
+                        found = True
+                    else:
+                        guildMsg = "I must interject by saying" + (nn.generate(channelMessage.content)[0])[len(channelMessage.content):]
+                        await client.send_message(channelMessage.channel, guildMsg)
+                        break
         elif "learn" in msg:
             if message.author.id == '199046815847415818':
                 guildMsg = "Pardon me while I take a minute to think this over."
@@ -78,7 +88,7 @@ async def on_message(message):
                             counter += 1
                 f.close()
         elif "youtube" in msg:
-            qry = msg[msg.find("youtube"):]
+            qry = msg[msg.find("youtube")+7:]
             query_string = urllib.parse.urlencode({"search_query" : qry})
             html_content = urllib.request.urlopen("http://www.youtube.com/results?" + query_string)
             search_results = re.findall(r'href=\"\/watch\?v=(.{11})', html_content.read().decode())
@@ -87,6 +97,10 @@ async def on_message(message):
         elif "gif" in msg:
             qry = msg[msg.find("gif")+3:]
             guildMsg = giphysearch.search(qry)
+            await client.send_message(message.channel, guildMsg)
+        elif "search" in msg:
+            qry = msg[msg.find("search")+5:]
+            guildMsg = ddg.search(qry)
             await client.send_message(message.channel, guildMsg)
             
     else:
