@@ -1,5 +1,5 @@
 from textgenrnn import textgenrnn
-textgen = textgenrnn('textgenrnn_weights.hdf5')
+textgen = textgenrnn('server_weights.hdf5')
 def train(epoch, mode):
     textgen.train_from_file('log.txt', num_epochs=epoch)
     if mode == 1:

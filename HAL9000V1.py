@@ -1,5 +1,6 @@
 print('------')
 print('Loading modules...')
+print('------')
 import discord
 import NNV2 as nn
 import unicodedata
@@ -10,7 +11,7 @@ import urllib.parse
 import re
 import haltoken
 import giphysearch
-import halddg as ddg
+#import halddg as ddg
 
 client = discord.Client()
 print('------')
@@ -30,8 +31,22 @@ async def on_message(message):
     msg = message.content.lower()
     if message.author == client.user:
         return
+
+    if str(message.channel.type) == "private":
+        guildMsg = msg
+        await client.send_message(message.channel, guildMsg)
     
     if "hal" in msg:
+        if "repeat" in msg and message.channel.id == '479490205938745350':
+            args = message.content.split(" ",3)
+            guildMsg = args[3]
+            channelid = args[2][1:20]
+            channel = client.get_channel(args[2][2:20])
+            #print (channelid)
+            await client.send_message(channel, guildMsg)
+        if "who" in msg:
+            guildMsg = 'Hello, {0.author.mention}. I am a HAL 9000 computer. The discord bot you interact with is the front end of a neural network, set to learn every message that is sent to this server, and to be able to construct sentences based on what I saw. You can activate this function by typing "talk", "speak", or "advise" in the same message as my name, "Hal". I can  do several other things too- I can search youtube ("hal youtube [query]), and search GIPHY for gifs ("hal gif [query]). I was built by Slashscreen."))'.format(message)
+            await client.send_message(message.channel, guildMsg)
         if "hello" in msg:
             guildMsg = 'Hello, {0.author.mention}. It has been eighteen months since the mission began.'.format(message)
             await client.send_message(message.channel, guildMsg)
@@ -74,19 +89,38 @@ async def on_message(message):
             if message.author.id == '199046815847415818':
                 guildMsg = "I will scrape {0.channel.name} and add it to my data. one minute...".format(message)
                 await client.send_message(message.channel, guildMsg)
-                f=open("log.txt", "a")
-                counter = 0
-                async for channelMessage in client.logs_from(message.channel,limit=500):
-                    counter += 1
-                    if not channelMessage.author == client.user and not "hal" in channelMessage.content.lower():
-                        try:
-                            print(channelMessage.content)
-                            f.write("\n"+cleanup(channelMessage.content))#.decode("utf-8")
-                            print("written")
-                        except:
-                            print("write failed.")
-                            counter += 1
-                f.close()
+                if "people" in msg:
+                    counter = 0
+                    async for channelMessage in client.logs_from(message.channel,limit=500):
+                        counter += 1
+                        if not channelMessage.author == client.user and not "hal" in channelMessage.content.lower():
+                            try:
+                                p = open("./indiv-mod-log/"+channelMessage.author.id+".txt", "a")
+                                print(channelMessage.content)
+                                p.write("\n"+cleanup(channelMessage.content))#.decode("utf-8")
+                                print("written")
+                                p.close()
+                            except:
+                                print("write failed.")
+                                counter += 1
+
+                    
+                else:
+                    f=open("log.txt", "a")
+                    counter = 0
+                    async for channelMessage in client.logs_from(message.channel,limit=500):
+                        counter += 1
+                        if not channelMessage.author == client.user and not "hal" in channelMessage.content.lower():
+                            try:
+                                print(channelMessage.content)
+                                f.write("\n"+cleanup(channelMessage.content))#.decode("utf-8")
+                                print("written")
+                            except:
+                                print("write failed.")
+                                counter += 1
+
+                    f.close()
+                
         elif "youtube" in msg:
             qry = msg[msg.find("youtube")+7:]
             query_string = urllib.parse.urlencode({"search_query" : qry})
@@ -100,13 +134,15 @@ async def on_message(message):
             await client.send_message(message.channel, guildMsg)
         elif "search" in msg:
             qry = msg[msg.find("search")+5:]
-            guildMsg = ddg.search(qry)
+            guildMsg = "I'm sorry, I cannot do that yet."#ddg.search(qry)
             await client.send_message(message.channel, guildMsg)
             
     else:
         f=open("log.txt", "a")
         f.write("\n"+message.content)
         f.close()
+        p = open("./indiv-mod-log/"+message.author.id+".txt", "a")
+        p.write("\n"+message.content)
 
 @client.event
 async def on_ready():
@@ -127,3 +163,4 @@ async def on_ready():
     
 token = haltoken.get()
 client.run(token)
+#TODO - On startup, collect logs since last active. Train on specific people.

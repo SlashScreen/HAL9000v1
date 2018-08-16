@@ -1,4 +1,4 @@
-from google import google
+from googlesearch import google
 def gsearch(qry):
     res = google.search(qry)
     return (res[0].link)
