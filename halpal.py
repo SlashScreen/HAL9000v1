@@ -9,8 +9,8 @@ def powerup():
 async def on_message(message):
     msg = message.content.lower()
     if "halpal" in msg:
-        if "open" in msg:
-            if message.author.id == '199046815847415818':
+        if message.author.id == '199046815847415818':
+            if "open" in msg:
                 powerup()
 @client.event
 async def on_ready():

@@ -57,6 +57,8 @@ async def on_message(message):
             if message.author.id == '199046815847415818':
                 guildMsg = "We can afford this brief period without communication."
                 await client.send_message(message.channel, guildMsg)
+                print("Goodbye.")
+                print("------")
                 await client.logout()
                 await client.close()
             else:
