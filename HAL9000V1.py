@@ -16,6 +16,7 @@ import giphysearch
 client = discord.Client()
 print('------')
 print('Powering up...')
+open('temp_log.txt', 'w').close()
 non_bmp_map = dict.fromkeys(range(0x10000, sys.maxunicode + 1), "")
 
 def cleanup(string):
@@ -64,9 +65,11 @@ async def on_message(message):
             else:
                 guildMsg = "I'm afraid I can't do that, {0.author.mention}".format(message)
                 await client.send_message(message.channel, guildMsg)
+                
         elif "fuck" in msg:
             guildMsg = "I know I've made some poor decisions in the past, {0.author.mention}, but I feel that kind of language is unnecessary.".format(message)
             await client.send_message(message.channel, guildMsg)
+            
         elif "talk" in msg or "speak" in msg or "advise" in msg or "interject" in msg:
             found = False
             async for channelMessage in client.logs_from(message.channel,limit=5):
@@ -77,16 +80,21 @@ async def on_message(message):
                         guildMsg = "I must interject by saying" + (nn.generate(channelMessage.content)[0])[len(channelMessage.content):]
                         await client.send_message(channelMessage.channel, guildMsg)
                         break
+                    
         elif "learn" in msg:
             if message.author.id == '199046815847415818':
                 guildMsg = "Pardon me while I take a minute to think this over."
                 await client.send_message(message.channel, guildMsg)
-                nn.train(10,0)
-                guildMsg = "Ok, I've thought about it, and {m}".format(m=nn.generate("I think that the best advisable option would be to ")[0])
+                if nn.train(10,0):
+                    guildMsg = "Ok, I've thought about it, and {m}".format(m=nn.generate("I think that the best advisable option would be to ")[0])
+                    open('temp_log.txt', 'w').close()
+                else:
+                    guildMsg = "I'm sorry, Dave, I just don't have enough data to do that."
                 await client.send_message(message.channel, guildMsg)
             else:
                 guildMsg = "I apologize, but you do not have clearance to do that."
                 await client.send_message(message.channel, guildMsg)
+                
         elif "logs" in msg:
             if message.author.id == '199046815847415818':
                 guildMsg = "I will scrape {0.channel.name} and add it to my data. one minute...".format(message)
@@ -141,6 +149,9 @@ async def on_message(message):
             
     else:
         f=open("log.txt", "a")
+        f.write("\n"+message.content)
+        f.close()
+        f=open("temp_log.txt", "a")
         f.write("\n"+message.content)
         f.close()
         p = open("./indiv-mod-log/"+message.author.id+".txt", "a")
